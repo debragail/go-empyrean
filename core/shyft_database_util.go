@@ -120,11 +120,16 @@ func swriteTransactions(sqldb *sql.DB, tx *types.Transaction, blockHash common.H
 		Status:      statusFromReciept,
 		IsContract:  isContract,
 	}
-	//Inserts Tx into DB
-	InsertTx(sqldb, txData)
-	//Runs necessary functions for tracing internal transactions through tracers.go
-	IShyftTracer.GetTracerToRun(tx.Hash())
 
+	isContractCheck := IsContract(sqldb, txData.To.String())
+	if isContractCheck == true {
+		InsertTx(sqldb, txData)
+		//Runs necessary functions for tracing internal transactions through tracers.go
+		IShyftTracer.GetTracerToRun(tx.Hash())
+	} else {
+		//Inserts Tx into DB
+		InsertTx(sqldb, txData)
+	}
 	return nil
 }
 
@@ -338,6 +343,19 @@ func BlockExists(sqldb *sql.DB, hash string) error {
 		panic(err)
 	default:
 		return err
+	}
+}
+
+//IsContract checks if toAddr is from a contract in Postgres Db
+func IsContract(sqldb *sql.DB, addr string) bool {
+	var isContract bool
+	sqlExistsStatement := `SELECT isContract from txs WHERE to_addr=($1)`
+	err := sqldb.QueryRow(sqlExistsStatement, strings.ToLower(addr)).Scan(&isContract)
+	switch {
+	case err == sql.ErrNoRows:
+		return isContract
+	default:
+		return isContract
 	}
 }
 
