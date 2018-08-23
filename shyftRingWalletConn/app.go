@@ -53,6 +53,7 @@ func main() {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
+	fmt.Println("Ring node listening on", CONN_HOST+":"+CONN_PORT)
 	defer l.Close()
 
 	for {
@@ -62,6 +63,7 @@ func main() {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
 		}
+		fmt.Println("Client", conn.RemoteAddr(), "connected.")
 		// Handle connections in a new goroutine.
 		go handleRequest(conn)
 	}
