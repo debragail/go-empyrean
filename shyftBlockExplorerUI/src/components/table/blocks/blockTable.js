@@ -12,7 +12,7 @@ const BlockTable = (props) => {
                     </Link>
                 </td>
                 <td className={classes.tdItem}> {props.Hash} </td>
-                <td className={classes.tdItem}> {props.AgeGet} </td>
+                <td className={classes.tdItem}> {props.Age} </td>
                 <td className={classes.tdItem}> {props.TxCount} </td>
                 <td className={classes.tdItem}> {props.UncleCount} </td>
                 <td className={classes.tdItem}>

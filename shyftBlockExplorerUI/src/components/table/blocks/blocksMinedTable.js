@@ -10,7 +10,7 @@ const MinedBlockTable = (props) => {
                 {props.Number}
             </Link></td>
             <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }} className={classes.addressTag}>{props.Hash}</td>
-            <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }}>{props.AgeGet}</td>
+            <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }}>{props.Age}</td>
             <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }}>{props.TxCount}</td>
             <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }}>{props.UncleCount}</td>
             <td style={{ paddingLeft: '30pt', paddingBottom: '7.5pt', paddingTop: '7.5pt'  }}className={classes.addressTag}>{props.Coinbase}</td>

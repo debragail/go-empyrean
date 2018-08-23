@@ -149,9 +149,6 @@ class App extends Component {
         }
         for (let key in dataEntry) {
             let value = dataEntry[key];
-            if (dataEntry["To"] === null) {
-                delete dataEntry["To"]
-            }
             if( key === "Input" || key === "Output" || key === "Data") {
                 components.push( 
                     <Grid>

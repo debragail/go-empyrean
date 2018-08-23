@@ -16,7 +16,7 @@ class DetailBlockTable extends Component {
                 </tr>
                 <tr>
                     <th scope="col">Age:</th>
-                    <td>{data.AgeGet}</td>
+                    <td>{data.Age}</td>
                 </tr>
                 <tr>
                     <th scope="col">Txn:</th>
