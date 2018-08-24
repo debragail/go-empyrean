@@ -14,6 +14,8 @@ For running on a remote server with proper TLS certs, view below.
 
 ### Creating TLS Certs On Remote Server and Running on Remote Server
 
+As an example this is using 16.04.4 x64 ubuntu machine.
+
 Copy ./example_openssl_config/openssl_env.cnf to the server and run
 
 ```
@@ -25,3 +27,5 @@ SUBJECTALTNAME="IP.1:<ring_public_ip>" openssl req -new -x509 -sha256 -key serve
 Run with the `ring-certificate`, `ring-key`, and `host` flags:
 
 `go run app.go -ring-certificate server.crt   -ring-key server.key   -host <ring_public_ip>`
+
+Then server.crt will need to be used by the shyft wallet that connects to the ring server. See the documentation in the shyft_wallet_app_node for an example.
