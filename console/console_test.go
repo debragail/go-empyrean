@@ -32,12 +32,13 @@ import (
 	"github.com/ShyftNetwork/go-empyrean/eth"
 	"github.com/ShyftNetwork/go-empyrean/internal/jsre"
 	"github.com/ShyftNetwork/go-empyrean/node"
+	"github.com/ShyftNetwork/go-empyrean/shyfttest"
 )
 
 const (
 	testInstance = "console-tester"
 	testAddress  = "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
-	)
+)
 
 // hookedPrompter implements UserPrompter to simulate use input via channels.
 type hookedPrompter struct {
@@ -81,6 +82,14 @@ type tester struct {
 	output    *bytes.Buffer
 }
 
+// @SHYFT NOTE: pg db setup for test
+func TestMain(m *testing.M) {
+	shyfttest.PgTestDbSetup()
+	retCode := m.Run()
+	shyfttest.PgTestTearDown()
+	os.Exit(retCode)
+}
+
 // newTester creates a test environment based on which the console can operate.
 // Please ensure you call Close() on the returned tester to avoid leaks.
 func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
@@ -95,6 +104,11 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 	if err != nil {
 		t.Fatalf("failed to create node: %v", err)
 	}
+	core.TruncateTables()
+	eth.NewShyftTestLDB()
+	shyftTracer := new(eth.ShyftTracer)
+	core.SetIShyftTracer(shyftTracer)
+
 	ethConf := &eth.Config{
 		Genesis:   core.DeveloperGenesisBlock(15, common.Address{}),
 		Etherbase: common.HexToAddress(testAddress),
@@ -102,6 +116,10 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 			PowMode: ethash.ModeTest,
 		},
 	}
+
+	eth.SetGlobalConfig(ethConf)
+	eth.InitTracerEnv()
+
 	if confOverride != nil {
 		confOverride(ethConf)
 	}

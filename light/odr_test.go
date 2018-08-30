@@ -247,7 +247,7 @@ func testChainGen(i int, block *core.BlockGen) {
 
 func testChainOdr(t *testing.T, protocol int, fn odrTestFn) {
 	//@SHYFT //SETS UP OUR TEST ENV
-	shyfttest.PgTestDbSetup()
+	core.TruncateTables()
 	eth.NewShyftTestLDB()
 	shyftTracer := new(eth.ShyftTracer)
 	core.SetIShyftTracer(shyftTracer)

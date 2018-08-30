@@ -19,6 +19,7 @@ package bind_test
 import (
 	"context"
 	"math/big"
+	"os"
 	"testing"
 	"time"
 
@@ -30,6 +31,7 @@ import (
 	"github.com/ShyftNetwork/go-empyrean/core/types"
 	"github.com/ShyftNetwork/go-empyrean/crypto"
 	"github.com/ShyftNetwork/go-empyrean/eth"
+	"github.com/ShyftNetwork/go-empyrean/shyfttest"
 )
 
 // @SHYFT NOTE: test ShyftTracer
@@ -59,12 +61,12 @@ var waitDeployedTests = map[string]struct {
 }
 
 // @SHYFT NOTE: Setup DB for Testing Before Each Test
-// func TestMain(m *testing.M) {
-// 	shyfttest.PgTestDbSetup()
-// 	retCode := m.Run()
-// 	shyfttest.PgTestTearDown()
-// 	os.Exit(retCode)
-// }
+func TestMain(m *testing.M) {
+	shyfttest.PgTestDbSetup()
+	retCode := m.Run()
+	shyfttest.PgTestTearDown()
+	os.Exit(retCode)
+}
 func TestWaitDeployed(t *testing.T) {
 	for name, test := range waitDeployedTests {
 		backend := backends.NewSimulatedBackend(core.GenesisAlloc{

@@ -30,11 +30,17 @@ import (
 	"github.com/ShyftNetwork/go-empyrean/core/types"
 	"github.com/ShyftNetwork/go-empyrean/core/vm"
 	"github.com/ShyftNetwork/go-empyrean/crypto"
+	"github.com/ShyftNetwork/go-empyrean/eth"
 	"github.com/ShyftNetwork/go-empyrean/eth/downloader"
 	"github.com/ShyftNetwork/go-empyrean/ethdb"
 	"github.com/ShyftNetwork/go-empyrean/event"
 	"github.com/ShyftNetwork/go-empyrean/p2p"
 	"github.com/ShyftNetwork/go-empyrean/params"
+)
+
+// @SHYFT NOTE: test ShyftTracer
+const (
+	testAddress = "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
 )
 
 // Tests that protocol versions and modes of operations are matched up properly.
@@ -55,6 +61,21 @@ func TestProtocolCompatibility(t *testing.T) {
 	// Try all available compatibility configs and check for errors
 	for i, tt := range tests {
 		ProtocolVersions = []uint{tt.version}
+		core.TruncateTables()
+		eth.NewShyftTestLDB()
+		shyftTracer := new(eth.ShyftTracer)
+		core.SetIShyftTracer(shyftTracer)
+
+		ethConf := &eth.Config{
+			Genesis:   core.DeveloperGenesisBlock(15, common.Address{}),
+			Etherbase: common.HexToAddress(testAddress),
+			Ethash: ethash.Config{
+				PowMode: ethash.ModeTest,
+			},
+		}
+
+		eth.SetGlobalConfig(ethConf)
+		eth.InitTracerEnv()
 
 		pm, _, err := newTestProtocolManager(tt.mode, 0, nil, nil)
 		if pm != nil {

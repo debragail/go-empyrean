@@ -21,11 +21,22 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ShyftNetwork/go-empyrean/common"
 	"github.com/ShyftNetwork/go-empyrean/consensus/ethash"
+	"github.com/ShyftNetwork/go-empyrean/core"
+	"github.com/ShyftNetwork/go-empyrean/eth"
+	"github.com/ShyftNetwork/go-empyrean/shyfttest"
+
+	// "github.com/ShyftNetwork/go-empyrean/core"
 	"github.com/ShyftNetwork/go-empyrean/core/types"
 	"github.com/ShyftNetwork/go-empyrean/core/vm"
 	"github.com/ShyftNetwork/go-empyrean/ethdb"
 	"github.com/ShyftNetwork/go-empyrean/params"
+)
+
+// @SHYFT NOTE: test ShyftTracer
+const (
+	testAddress = "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
 )
 
 // Tests that simple header verification works, for both good and bad blocks.
@@ -72,9 +83,27 @@ func TestHeaderVerification(t *testing.T) {
 			case <-time.After(25 * time.Millisecond):
 			}
 		}
-		TruncateTables()
+		core.TruncateTables()
+		eth.NewShyftTestLDB()
+		shyftTracer := new(ShyftTracer)
+		core.SetIShyftTracer(shyftTracer)
+
+		ethConf := &eth.Config{
+			Genesis:   DeveloperGenesisBlock(15, common.Address{}),
+			Etherbase: common.HexToAddress(testAddress),
+			Ethash: ethash.Config{
+				PowMode: ethash.ModeTest,
+			},
+		}
+
+		eth.SetGlobalConfig(ethConf)
+		eth.InitTracerEnv()
 		chain.InsertChain(blocks[i : i+1])
 	}
+}
+
+func TrucateTestDb(o shyfttest.CoreTruncator) {
+	o.TruncateTables()
 }
 
 // Tests that concurrent header verification works, for both good and bad blocks.
