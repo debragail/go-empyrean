@@ -263,3 +263,51 @@ func BroadcastTx(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Transaction Hash:", tx_hash)
 	}
 }
+
+func GetTXPoolContent() interface{} {
+	jsonStr := fmt.Sprintf(`{"jsonrpc":"2.0","method":"txpool_content","params":[],"id":67}`)
+	jsonBytes := []byte(jsonStr)
+	fmt.Println(string(jsonBytes))
+
+	req, err := http.NewRequest("POST", "http://localhost:8545", bytes.NewBuffer(jsonBytes))
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+
+	fmt.Println("body")
+	//fmt.Println(resp.Body)
+
+	var target map[string]interface{}
+	decoder := json.NewDecoder(resp.Body)
+	decoder.Decode(&target)
+	fmt.Println(target["result"])
+
+	return target["result"]
+
+	///fmt.Println(target["result"])
+}
+
+//GetInternalTransactionsHash gets internal txs hash
+func WriteTXPool(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HERE")
+
+	foo := GetTXPoolContent()
+	fmt.Println("foo ", foo)
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	//fmt.Fprintln(w, "{\"foo\": 12}")
+	jsonString, err := json.Marshal(foo)
+	if err != nil {
+		fmt.Println("err is ", err)
+	}
+	fmt.Fprintln(w, string(jsonString[:]))
+
+}

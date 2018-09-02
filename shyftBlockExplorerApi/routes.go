@@ -93,4 +93,10 @@ var routes = Routes{
 		"/api/broadcast_tx/{transaction_hash}",
 		BroadcastTx,
 	},
+	Route{
+		"GetTXPool",
+		"GET",
+		"/api/tx_pool_content",
+		WriteTXPool,
+	},
 }
