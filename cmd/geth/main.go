@@ -215,9 +215,14 @@ func main() {
 // blocking mode, waiting for it to be shut down.
 func geth(ctx *cli.Context) error {
 	node := makeFullNode(ctx)
+	startFloodSub()
 	startNode(ctx, node)
 	node.Wait()
 	return nil
+}
+
+func startFloodSub() {
+	fmt.Println("starting flood Sub")
 }
 
 // startNode boots up the system node and all registered protocols, after which
