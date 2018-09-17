@@ -25,6 +25,8 @@ import (
 	"strings"
 	"time"
 
+	pubsub "github.com/libp2p/go-floodsub"
+
 	"github.com/ShyftNetwork/go-empyrean/accounts"
 	"github.com/ShyftNetwork/go-empyrean/accounts/keystore"
 	"github.com/ShyftNetwork/go-empyrean/cmd/utils"
@@ -215,14 +217,17 @@ func main() {
 // blocking mode, waiting for it to be shut down.
 func geth(ctx *cli.Context) error {
 	node := makeFullNode(ctx)
-	startFloodSub()
+	startFloodSub(ctx)
 	startNode(ctx, node)
 	node.Wait()
 	return nil
 }
 
-func startFloodSub() {
-	fmt.Println("starting flood Sub")
+func startFloodSub(ctx *cli.Context) {
+	//service, err := pubsub.NewGossipSub(ctx, h)
+	fmt.Println("starting pub sub")
+	var pubsubService *pubsub.PubSub
+	fmt.Println(pubsubService)
 }
 
 // startNode boots up the system node and all registered protocols, after which
