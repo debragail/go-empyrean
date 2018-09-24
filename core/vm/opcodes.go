@@ -37,7 +37,7 @@ func (op OpCode) IsStaticJump() bool {
 
 const (
 	// 0x0 range - arithmetic ops
-	STOP OpCode = iota
+	STOP       OpCode = iota
 	ADD
 	MUL
 	SUB
@@ -52,7 +52,7 @@ const (
 )
 
 const (
-	LT OpCode = iota + 0x10
+	LT     OpCode = iota + 0x10
 	GT
 	SLT
 	SGT
@@ -72,7 +72,7 @@ const (
 
 const (
 	// 0x30 range - closure state
-	ADDRESS OpCode = 0x30 + iota
+	ADDRESS        OpCode = 0x30 + iota
 	BALANCE
 	ORIGIN
 	CALLER
@@ -91,7 +91,7 @@ const (
 
 const (
 	// 0x40 range - block operations
-	BLOCKHASH OpCode = 0x40 + iota
+	BLOCKHASH  OpCode = 0x40 + iota
 	COINBASE
 	TIMESTAMP
 	NUMBER
@@ -101,7 +101,7 @@ const (
 
 const (
 	// 0x50 range - 'storage' and execution
-	POP OpCode = 0x50 + iota
+	POP      OpCode = 0x50 + iota
 	MLOAD
 	MSTORE
 	MSTORE8
@@ -117,7 +117,7 @@ const (
 
 const (
 	// 0x60 range
-	PUSH1 OpCode = 0x60 + iota
+	PUSH1  OpCode = 0x60 + iota
 	PUSH2
 	PUSH3
 	PUSH4
@@ -200,15 +200,20 @@ const (
 
 const (
 	// 0xf0 range - closures
-	CREATE OpCode = 0xf0 + iota
+	CREATE       OpCode = 0xf0 + iota
 	CALL
 	CALLCODE
 	RETURN
 	DELEGATECALL
-	STATICCALL = 0xfa
+	STATICCALL   = 0xfa
 
 	REVERT       = 0xfd
 	SELFDESTRUCT = 0xff
+)
+
+// Shyft Opcodes
+const (
+	MERKLEPROVE = 0xe3
 )
 
 // Since the opcodes aren't all in order we can't use a regular slice
@@ -373,6 +378,9 @@ var opCodeToString = map[OpCode]string{
 	PUSH: "PUSH",
 	DUP:  "DUP",
 	SWAP: "SWAP",
+
+	// Shyft Opcodes
+	MERKLEPROVE: "MERKLEPROVE",
 }
 
 func (o OpCode) String() string {
@@ -522,6 +530,7 @@ var stringToOp = map[string]OpCode{
 	"CALLCODE":       CALLCODE,
 	"REVERT":         REVERT,
 	"SELFDESTRUCT":   SELFDESTRUCT,
+	"MERKLEPROVE":    MERKLEPROVE,
 }
 
 func StringToOp(str string) OpCode {

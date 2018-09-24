@@ -821,6 +821,44 @@ func opSuicide(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *
 	return nil, nil
 }
 
+func opMerkleProve(pc *uint64, interpreter *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	proofStart, leaf, root := stack.pop(), stack.pop(), stack.pop()
+	proofLen := new(big.Int).SetBytes(memory.Get(proofStart.Int64(), big.NewInt(32).Int64()))
+	// Ensure proof consists of 1 or more 32byte hash + 1byte left/right
+	if new(big.Int).Mod(proofLen, big.NewInt(33)).Cmp(big.NewInt(0)) != 0 {
+		return nil, fmt.Errorf("evm: MERKLEPROVE proof length invalid: %d", proofLen)
+	}
+
+	i := big.NewInt(33)
+	computedHash := leaf
+	// While i <= length (cmp = 1 or cmp = 0)
+	for i.Cmp(proofLen) <= 0 {
+		// Load element from memory[proofStart + i]
+		proofLocation := new(big.Int)
+		proofLocation.Add(proofStart, i)
+		proofElement := memory.Get(proofLocation.Int64(), big.NewInt(32).Int64())
+		// Load left/right from memory[proofStart + i - 1]
+		isRightLocation := new(big.Int)
+		isRightLocation.Sub(proofLocation, big.NewInt(1))
+		isRight := new(big.Int).SetBytes(memory.Get(isRightLocation.Int64(), big.NewInt(1).Int64()))
+
+		if isRight.Cmp(big.NewInt(1)) == 0 {
+			computedHash = new(big.Int).SetBytes(crypto.Keccak256(computedHash.Bytes(), proofElement))
+		} else {
+			computedHash = new(big.Int).SetBytes(crypto.Keccak256(proofElement, computedHash.Bytes()))
+		}
+		i.Add(i, big.NewInt(33))
+	}
+
+	if computedHash.Cmp(root) == 0 {
+		stack.push(big.NewInt(1))
+	} else {
+		stack.push(big.NewInt(0))
+	}
+
+	return nil, nil
+}
+
 // following functions are used by the instruction jump  table
 
 // make log instruction function

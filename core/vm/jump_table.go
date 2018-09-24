@@ -24,10 +24,10 @@ import (
 )
 
 type (
-	executionFunc       func(pc *uint64, env *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error)
-	gasFunc             func(params.GasTable, *EVM, *Contract, *Stack, *Memory, uint64) (uint64, error) // last parameter is the requested memory size as a uint64
+	executionFunc func(pc *uint64, env *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error)
+	gasFunc func(params.GasTable, *EVM, *Contract, *Stack, *Memory, uint64) (uint64, error) // last parameter is the requested memory size as a uint64
 	stackValidationFunc func(*Stack) error
-	memorySizeFunc      func(*Stack) *big.Int
+	memorySizeFunc func(*Stack) *big.Int
 )
 
 var errGasUintOverflow = errors.New("gas uint64 overflow")
@@ -946,6 +946,12 @@ func NewFrontierInstructionSet() [256]operation {
 			halts:         true,
 			valid:         true,
 			writes:        true,
+		},
+		MERKLEPROVE: {
+			execute:       opMerkleProve,
+			gasCost:       gasMerkleProve,
+			validateStack: makeStackFunc(3, 1),
+			valid:         true,
 		},
 	}
 }
